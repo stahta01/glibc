@@ -148,7 +148,7 @@ libsupport-routines = \
 
 libsupport-static-only-routines := $(libsupport-routines)
 # Only build one variant of the library.
-libsupport-inhibit-o := .os
+libsupport-inhibit-o := .o_shared
 ifeq ($(build-shared),yes)
 libsupport-inhibit-o += .o
 endif

@@ -24,7 +24,7 @@ endif
 
 ifeq ($(subdir),elf)
 # There is no good reason to use MMX in x86-64 ld.so with GCC.
-CFLAGS-.os += $(if $(filter $(@F),$(patsubst %,%.os,$(all-rtld-routines))),\
+CFLAGS-.o_shared += $(if $(filter $(@F),$(patsubst %,%.o_shared,$(all-rtld-routines))),\
 		   -mno-mmx)
 
 sysdep-dl-routines += tlsdesc dl-tlsdesc tls_get_addr
@@ -150,7 +150,7 @@ ifeq ($(subdir),csu)
 gen-as-const-headers += tlsdesc.sym rtld-offsets.sym
 endif
 
-$(objpfx)x86_64/tst-x86_64mod-1.os: $(objpfx)tst-x86_64mod-1.os
+$(objpfx)x86_64/tst-x86_64mod-1.o_shared: $(objpfx)tst-x86_64mod-1.o_shared
 	$(make-target-directory)
 	rm -f $@
 	ln $< $@
@@ -161,7 +161,7 @@ do-tests-clean common-mostlyclean: tst-x86_64-1-clean
 tst-x86_64-1-clean:
 	-rm -rf $(objpfx)x86_64
 
-$(objpfx)x86_64/tst-platformmod-2.os: $(objpfx)tst-platformmod-2.os
+$(objpfx)x86_64/tst-platformmod-2.o_shared: $(objpfx)tst-platformmod-2.o_shared
 	$(make-target-directory)
 	rm -f $@
 	ln $< $@

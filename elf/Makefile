@@ -52,7 +52,7 @@ endif
 
 all-dl-routines = $(dl-routines) $(sysdep-dl-routines)
 # But they are absent from the shared libc, because that code is in ld.so.
-elide-routines.os = $(all-dl-routines) dl-support enbl-secure dl-origin \
+elide-routines.o_shared = $(all-dl-routines) dl-support enbl-secure dl-origin \
 		    dl-sysdep dl-exception dl-reloc-static-pie
 shared-only-routines += dl-caller
 
@@ -74,9 +74,9 @@ define elide-stack-protector
 $(if $(filter $(@F),$(patsubst %,%$(1),$(2))), $(no-stack-protector))
 endef
 
-CFLAGS-.o += $(call elide-stack-protector,.o,$(elide-routines.os))
-CFLAGS-.op += $(call elide-stack-protector,.op,$(elide-routines.os))
-CFLAGS-.os += $(call elide-stack-protector,.os,$(all-rtld-routines))
+CFLAGS-.o += $(call elide-stack-protector,.o,$(elide-routines.o_shared))
+CFLAGS-.op += $(call elide-stack-protector,.op,$(elide-routines.o_shared))
+CFLAGS-.o_shared += $(call elide-stack-protector,.o_shared,$(all-rtld-routines))
 
 ifeq ($(unwind-find-fde),yes)
 routines += unwind-dw2-fde-glibc
@@ -92,8 +92,8 @@ ld-map		= $(common-objpfx)ld.map
 endif
 
 ifeq (yes,$(build-shared))
-extra-objs	= $(all-rtld-routines:%=%.os) soinit.os sofini.os interp.os
-generated	+= librtld.os dl-allobjs.os ld.so ldd
+extra-objs	= $(all-rtld-routines:%=%.o_shared) soinit.o_shared sofini.o_shared interp.o_shared
+generated	+= librtld.o_shared dl-allobjs.o_shared ld.so ldd
 install-others	= $(inst_rtlddir)/$(rtld-installed-name)
 install-bin-script = ldd
 endif
@@ -121,12 +121,12 @@ endif
 vpath %.c ../locale/programs
 
 ifeq ($(build-shared),yes)
-extra-objs += sotruss-lib.os sotruss-lib.so
+extra-objs += sotruss-lib.o_shared sotruss-lib.so
 install-others += $(inst_auditdir)/sotruss-lib.so
 install-bin-script += sotruss
 generated += sotruss
 libof-sotruss-lib = extramodules
-$(objpfx)sotruss-lib.so: $(objpfx)sotruss-lib.os
+$(objpfx)sotruss-lib.so: $(objpfx)sotruss-lib.o_shared
 	$(build-module-asneeded)
 $(objpfx)sotruss-lib.so: $(common-objpfx)libc.so $(objpfx)ld.so \
 	$(common-objpfx)libc_nonshared.a
@@ -216,7 +216,7 @@ one-hundred = $(foreach x,0 1 2 3 4 5 6 7 8 9, \
   0$x 1$x 2$x 3$x 4$x 5$x 6$x 7$x 8$x 9$x)
 tst-tls-many-dynamic-modules := \
   $(foreach n,$(one-hundred),tst-tls-manydynamic$(n)mod)
-extra-test-objs += $(tlsmod17a-modules:=.os) $(tlsmod18a-modules:=.os) \
+extra-test-objs += $(tlsmod17a-modules:=.o_shared) $(tlsmod18a-modules:=.o_shared) \
 		   tst-tlsalign-vars.o
 test-extras += tst-tlsmod17a tst-tlsmod18a tst-tlsalign-vars
 modules-names = testobj1 testobj2 testobj3 testobj4 testobj5 testobj6 \
@@ -307,7 +307,7 @@ CFLAGS-vismain.c += $(PIE-ccflag)
 endif
 endif
 modules-execstack-yes = tst-execstack-mod
-extra-test-objs += $(addsuffix .os,$(strip $(modules-names)))
+extra-test-objs += $(addsuffix .o_shared,$(strip $(modules-names)))
 
 # filtmod1.so has a special rule
 modules-names-nobuild := filtmod1
@@ -383,7 +383,7 @@ endif
 ifeq (yesyes,$(have-fpie)$(build-shared))
 tests-internal += tst-_dl_addr_inside_object
 tests-pie += tst-_dl_addr_inside_object
-$(objpfx)tst-_dl_addr_inside_object: $(objpfx)dl-addr-obj.os
+$(objpfx)tst-_dl_addr_inside_object: $(objpfx)dl-addr-obj.o_shared
 CFLAGS-tst-_dl_addr_inside_object.c += $(PIE-ccflag)
 endif
 
@@ -411,7 +411,7 @@ reloc-link = $(LINK.o) -nostdlib -nostartfiles -r
 
 $(objpfx)sotruss-lib.so: $(shlib-lds)
 
-$(objpfx)dl-allobjs.os: $(all-rtld-routines:%=$(objpfx)%.os)
+$(objpfx)dl-allobjs.o_shared: $(all-rtld-routines:%=$(objpfx)%.o_shared)
 	$(reloc-link) -o $@ $^
 
 # Link together the dynamic linker into a single relocatable object.
@@ -419,7 +419,7 @@ $(objpfx)dl-allobjs.os: $(all-rtld-routines:%=$(objpfx)%.os)
 # and discard the object produced by that link.  From the link map
 # we can glean all the libc modules that need to go into the dynamic
 # linker.  Then we do a recursive make that goes into all the subdirs
-# those modules come from and builds special rtld-foo.os versions that
+# those modules come from and builds special rtld-foo.o_shared versions that
 # are compiled with special flags, and puts these modules into rtld-libc.a
 # for us.  Then we do the real link using rtld-libc.a instead of libc_pic.a.
 
@@ -435,7 +435,7 @@ else
 dummy-stack-chk-fail :=
 endif
 
-$(objpfx)librtld.map: $(objpfx)dl-allobjs.os $(common-objpfx)libc_pic.a
+$(objpfx)librtld.map: $(objpfx)dl-allobjs.o_shared $(common-objpfx)libc_pic.a
 	@-rm -f $@T
 	$(reloc-link) -o $@.o $(dummy-stack-chk-fail) \
 		'-Wl,-(' $^ -lgcc '-Wl,-)' -Wl,-Map,$@T
@@ -444,15 +444,15 @@ $(objpfx)librtld.map: $(objpfx)dl-allobjs.os $(common-objpfx)libc_pic.a
 
 $(objpfx)librtld.mk: $(objpfx)librtld.map Makefile
 	LC_ALL=C \
-	sed -n 's@^$(common-objpfx)\([^(]*\)(\([^)]*\.os\)) *.*$$@\1 \2@p' \
+	sed -n 's@^$(common-objpfx)\([^(]*\)(\([^)]*\.o_shared\)) *.*$$@\1 \2@p' \
 	    $< | \
 	while read lib file; do \
 	  case $$lib in \
 	  libc_pic.a) \
 	    LC_ALL=C fgrep -l /$$file \
-		  $(common-objpfx)stamp.os $(common-objpfx)*/stamp.os | \
+		  $(common-objpfx)stamp.o_shared $(common-objpfx)*/stamp.o_shared | \
 	    LC_ALL=C \
-	    sed 's@^$(common-objpfx)\([^/]*\)/stamp\.os$$@rtld-\1'" +=$$file@"\
+	    sed 's@^$(common-objpfx)\([^/]*\)/stamp\.o_shared$$@rtld-\1'" +=$$file@"\
 	    ;; \
 	  */*.a) \
 	    echo rtld-$${lib%%/*} += $$file ;; \
@@ -466,15 +466,15 @@ $(objpfx)librtld.mk: $(objpfx)librtld.map Makefile
 $(objpfx)rtld-libc.a: $(objpfx)librtld.mk FORCE
 	$(MAKE) -f $< -f rtld-Rules
 
-$(objpfx)librtld.os: $(objpfx)dl-allobjs.os $(objpfx)rtld-libc.a
+$(objpfx)librtld.o_shared: $(objpfx)dl-allobjs.o_shared $(objpfx)rtld-libc.a
 	$(LINK.o) -nostdlib -nostartfiles -r -o $@ '-Wl,-(' $^ -lgcc '-Wl,-)' \
 		  -Wl,-Map,$@.map
 
-generated += librtld.map librtld.mk rtld-libc.a librtld.os.map
+generated += librtld.map librtld.mk rtld-libc.a librtld.o_shared.map
 
 z-now-yes = -Wl,-z,now
 
-$(objpfx)ld.so: $(objpfx)librtld.os $(ld-map)
+$(objpfx)ld.so: $(objpfx)librtld.o_shared $(ld-map)
 # Link into a temporary file so that we don't touch $@ at all
 # if the sanity check below fails.
 	$(LINK.o) -nostdlib -nostartfiles -shared -o $@.new		\
@@ -489,7 +489,7 @@ $(objpfx)ld.so: $(objpfx)librtld.os $(ld-map)
 
 ifeq (yes,$(build-shared))
 # interp.c exists just to get the runtime linker path into libc.so.
-$(objpfx)interp.os: $(common-objpfx)runtime-linker.h
+$(objpfx)interp.o_shared: $(common-objpfx)runtime-linker.h
 endif
 
 ifneq (ld.so,$(rtld-installed-name))
@@ -569,7 +569,7 @@ CFLAGS-dl-cache.c += $(SYSCONF-FLAGS)
 CFLAGS-cache.c += $(SYSCONF-FLAGS)
 CFLAGS-rtld.c += $(SYSCONF-FLAGS)
 
-cpp-srcs-left := $(all-rtld-routines:=.os)
+cpp-srcs-left := $(all-rtld-routines:=.o_shared)
 lib := rtld
 include $(patsubst %,$(..)libof-iterator.mk,$(cpp-srcs-left))
 
@@ -822,7 +822,7 @@ $(objpfx)nodlopenmod2.so: $(objpfx)nodlopenmod.so
 $(objpfx)nodlopen2: $(libdl)
 $(objpfx)nodlopen2.out: $(objpfx)nodlopenmod2.so
 
-$(objpfx)filtmod1.so: $(objpfx)filtmod1.os $(objpfx)filtmod2.so
+$(objpfx)filtmod1.so: $(objpfx)filtmod1.o_shared $(objpfx)filtmod2.so
 	$(LINK.o) -shared -o $@ -B$(csu-objpfx) $(LDFLAGS.so) \
 		  -L$(subst :, -L,$(rpath-link)) \
 		  -Wl,-rpath-link=$(rpath-link) \
@@ -943,14 +943,14 @@ $(objpfx)tst-tls16.out: $(objpfx)tst-tlsmod16a.so $(objpfx)tst-tlsmod16b.so
 
 $(objpfx)tst-tls17: $(libdl)
 $(objpfx)tst-tls17.out: $(objpfx)tst-tlsmod17b.so
-$(patsubst %,$(objpfx)%.os,$(tlsmod17a-modules)): $(objpfx)tst-tlsmod17a%.os: tst-tlsmod17a.c
+$(patsubst %,$(objpfx)%.o_shared,$(tlsmod17a-modules)): $(objpfx)tst-tlsmod17a%.o_shared: tst-tlsmod17a.c
 	$(compile-command.c) -DN=$*
 $(patsubst %,$(objpfx)%.so,$(tlsmod17a-modules)): $(objpfx)tst-tlsmod17a%.so: $(objpfx)ld.so
 $(objpfx)tst-tlsmod17b.so: $(patsubst %,$(objpfx)%.so,$(tlsmod17a-modules))
 
 $(objpfx)tst-tls18: $(libdl)
 $(objpfx)tst-tls18.out: $(patsubst %,$(objpfx)%.so,$(tlsmod18a-modules))
-$(patsubst %,$(objpfx)%.os,$(tlsmod18a-modules)): $(objpfx)tst-tlsmod18a%.os : tst-tlsmod18a.c
+$(patsubst %,$(objpfx)%.o_shared,$(tlsmod18a-modules)): $(objpfx)tst-tlsmod18a%.o_shared : tst-tlsmod18a.c
 	$(compile-command.c) -DN=$*
 $(patsubst %,$(objpfx)%.so,$(tlsmod18a-modules)): $(objpfx)tst-tlsmod18a%.so: $(objpfx)ld.so
 
@@ -1307,7 +1307,7 @@ LDFLAGS-tst-initorder2a.so = $(no-as-needed)
 LDFLAGS-tst-initorder2b.so = $(no-as-needed)
 LDFLAGS-tst-initorder2c.so = $(no-as-needed)
 define o-iterator-doit
-$(objpfx)tst-initorder2$o.os: tst-initorder2.c; \
+$(objpfx)tst-initorder2$o.o_shared: tst-initorder2.c; \
 $$(compile-command.c) -DNAME=\"$o\"
 endef
 object-suffixes-left := a b c d
@@ -1360,8 +1360,8 @@ $(objpfx)tst-latepthread: $(libdl)
 $(objpfx)tst-latepthread.out: $(objpfx)tst-latepthreadmod.so
 
 # The test modules are parameterized by preprocessor macros.
-$(patsubst %,$(objpfx)%.os,$(tst-tls-many-dynamic-modules)): \
-  $(objpfx)tst-tls-manydynamic%mod.os : tst-tls-manydynamicmod.c
+$(patsubst %,$(objpfx)%.o_shared,$(tst-tls-many-dynamic-modules)): \
+  $(objpfx)tst-tls-manydynamic%mod.o_shared : tst-tls-manydynamicmod.c
 	$(compile-command.c) \
 	  -DNAME=tls_global_$* -DSETTER=set_value_$* -DGETTER=get_value_$*
 $(objpfx)tst-tls-manydynamic: $(libdl) $(shared-thread-library)

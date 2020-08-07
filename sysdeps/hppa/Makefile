@@ -18,8 +18,8 @@
 
 # We used to need this since the build process uses ld -r.  Now we use
 # ld -r --unique=.text* which does more or less the same thing, but better.
-# CFLAGS-.os += -ffunction-sections
-LDFLAGS-c_pic.os += -Wl,--unique=.text*
+# CFLAGS-.o_shared += -ffunction-sections
+LDFLAGS-c_pic.o_shared += -Wl,--unique=.text*
 
 ifeq ($(subdir),elf)
 CFLAGS-rtld.c += -mdisable-fpregs

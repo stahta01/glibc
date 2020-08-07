@@ -553,7 +553,7 @@ link-libc-tests-rpath-link = $(link-libc-rpath-link)
 endif  # build-hardcoded-path-in-tests
 
 link-libc-before-gnulib = $(common-objpfx)libc.so$(libc.so-version) \
-			  $(common-objpfx)$(patsubst %,$(libtype.oS),c) \
+			  $(common-objpfx)$(patsubst %,$(libtype.o_static),c) \
 			  $(as-needed) $(elf-objpfx)ld.so \
 			  $(no-as-needed)
 link-libc = $(link-libc-rpath-link) $(link-libc-before-gnulib) $(gnulib)
@@ -987,7 +987,7 @@ endif
 # to pass different flags for each flavor.
 libtypes = $(foreach o,$(object-suffixes-for-libc),$(libtype$o))
 # .op may be added to all-object-suffixes below.
-all-object-suffixes := .o .os .oS
+all-object-suffixes := .o .o_shared .o_static
 object-suffixes :=
 CPPFLAGS-.o = $(pic-default)
 # libc.a must be compiled with -fPIE/-fpie for static PIE.
@@ -996,11 +996,11 @@ libtype.o := lib%.a
 object-suffixes += .o
 ifeq (yes,$(build-shared))
 # Under --enable-shared, we will build a shared library of PIC objects.
-# The PIC object files are named foo.os.
-object-suffixes += .os
-CPPFLAGS-.os = -DPIC -DSHARED
-CFLAGS-.os = $(filter %frame-pointer,$(+cflags)) $(pic-ccflag)
-libtype.os := lib%_pic.a
+# The PIC object files are named foo.o_shared.
+object-suffixes += .o_shared
+CPPFLAGS-.o_shared = -DPIC -DSHARED
+CFLAGS-.o_shared = $(filter %frame-pointer,$(+cflags)) $(pic-ccflag)
+libtype.o_shared := lib%_pic.a
 # This can be changed by a sysdep makefile
 pic-ccflag = -fPIC
 # This one should always stay like this unless there is a very good reason.
@@ -1023,20 +1023,20 @@ endif
 
 # Convenience variable for when we want to treat shared-library cases
 # differently from the rest.
-object-suffixes-noshared := $(filter-out .os,$(object-suffixes))
+object-suffixes-noshared := $(filter-out .o_shared,$(object-suffixes))
 
 object-suffixes-for-libc := $(object-suffixes)
 
 ifeq (yes,$(build-shared))
 # Build special library that contains the static-only routines for libc.
-object-suffixes-for-libc += .oS
+object-suffixes-for-libc += .o_static
 
 # Must build the routines as PIC, though, because they can end up in (users')
 # shared objects.  We don't want to use CFLAGS-os because users may, for
 # example, make that processor-specific.
-CFLAGS-.oS = $(CFLAGS-.o) $(PIC-ccflag)
-CPPFLAGS-.oS = $(CPPFLAGS-.o) -DPIC -DLIBC_NONSHARED=1
-libtype.oS = lib%_nonshared.a
+CFLAGS-.o_static = $(CFLAGS-.o) $(PIC-ccflag)
+CPPFLAGS-.o_static = $(CPPFLAGS-.o) -DPIC -DLIBC_NONSHARED=1
+libtype.o_static = lib%_nonshared.a
 endif
 
 # The assembler can generate debug information too.

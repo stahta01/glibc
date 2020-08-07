@@ -16,7 +16,7 @@ object-suffixes-$(lib) := $(filter-out $($(lib)-inhibit-o),$(object-suffixes))
 
 ifneq (,$($(lib)-static-only-routines))
 ifneq (,$(filter yes%,$(build-shared)$($(lib).so-version)))
-object-suffixes-$(lib) += $(filter-out $($(lib)-inhibit-o),.oS)
+object-suffixes-$(lib) += $(filter-out $($(lib)-inhibit-o),.o_static)
 endif
 endif
 
@@ -34,16 +34,16 @@ all-$(lib)-routines := $($(lib)-routines) $($(lib)-sysdep_routines)
 ifeq (,$(filter $(lib), $(extra-libs-noinstall)))
 install-lib += $(foreach o,$(object-suffixes-$(lib)),$(lib:lib%=$(libtype$o)))
 endif
-extra-objs += $(foreach o,$(filter-out .os .oS,$(object-suffixes-$(lib))),\
+extra-objs += $(foreach o,$(filter-out .o_shared .o_static,$(object-suffixes-$(lib))),\
 			$(patsubst %,%$o,$(filter-out \
 					   $($(lib)-shared-only-routines),\
 					   $(all-$(lib)-routines))))
-ifneq (,$(filter .os,$(object-suffixes-$(lib))))
-extra-objs += $(patsubst %,%.os,$(filter-out $($(lib)-static-only-routines),\
+ifneq (,$(filter .o_shared,$(object-suffixes-$(lib))))
+extra-objs += $(patsubst %,%.o_shared,$(filter-out $($(lib)-static-only-routines),\
 					     $(all-$(lib)-routines)))
 endif
-ifneq (,$(filter .oS,$(object-suffixes-$(lib))))
-extra-objs += $(patsubst %,%.oS,$(filter $($(lib)-static-only-routines),\
+ifneq (,$(filter .o_static,$(object-suffixes-$(lib))))
+extra-objs += $(patsubst %,%.o_static,$(filter $($(lib)-static-only-routines),\
 					 $(all-$(lib)-routines)))
 endif
 alltypes-$(lib) := $(foreach o,$(object-suffixes-$(lib)),\
@@ -61,13 +61,13 @@ endif
 
 # The linked shared library is never a dependent of lib-noranlib,
 # because linking it will depend on libc.so already being built.
-ifneq (,$(filter .os,$(object-suffixes-$(lib))))
+ifneq (,$(filter .o_shared,$(object-suffixes-$(lib))))
 others: $(objpfx)$(lib).so$($(lib).so-version)
 endif
 
 
 # Use o-iterator.mk to generate a rule for each flavor of library.
-ifneq (,$(filter-out .os .oS,$(object-suffixes-$(lib))))
+ifneq (,$(filter-out .o_shared .o_static,$(object-suffixes-$(lib))))
 define o-iterator-doit
 $(objpfx)$(patsubst %,$(libtype$o),$(lib:lib%=%)): \
   $(patsubst %,$(objpfx)%$o,\
@@ -75,21 +75,21 @@ $(objpfx)$(patsubst %,$(libtype$o),$(lib:lib%=%)): \
 			  $(all-$(lib)-routines))); \
 	$$(build-extra-lib)
 endef
-object-suffixes-left = $(filter-out .os .oS,$(object-suffixes-$(lib)))
+object-suffixes-left = $(filter-out .o_shared .o_static,$(object-suffixes-$(lib)))
 include $(patsubst %,$(..)o-iterator.mk,$(object-suffixes-left))
 endif
 
-ifneq (,$(filter .os,$(object-suffixes-$(lib))))
-$(objpfx)$(patsubst %,$(libtype.os),$(lib:lib%=%)): \
-  $(patsubst %,$(objpfx)%.os,\
+ifneq (,$(filter .o_shared,$(object-suffixes-$(lib))))
+$(objpfx)$(patsubst %,$(libtype.o_shared),$(lib:lib%=%)): \
+  $(patsubst %,$(objpfx)%.o_shared,\
 	     $(filter-out $($(lib)-static-only-routines),\
 			  $(all-$(lib)-routines)))
 	$(build-extra-lib)
 endif
 
-ifneq (,$(filter .oS,$(object-suffixes-$(lib))))
-$(objpfx)$(patsubst %,$(libtype.oS),$(lib:lib%=%)): \
-  $(patsubst %,$(objpfx)%.oS,\
+ifneq (,$(filter .o_static,$(object-suffixes-$(lib))))
+$(objpfx)$(patsubst %,$(libtype.o_static),$(lib:lib%=%)): \
+  $(patsubst %,$(objpfx)%.o_static,\
 	     $(filter $($(lib)-static-only-routines),\
 		      $(all-$(lib)-routines)))
 	$(build-extra-lib)

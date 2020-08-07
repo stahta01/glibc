@@ -29,7 +29,7 @@ include ../Makeconfig
 routines = init-first libc-start $(libc-init) sysdep version check_fds \
 	   libc-tls elf-init dso_handle
 aux	 = errno
-elide-routines.os = libc-tls
+elide-routines.o_shared = libc-tls
 static-only-routines = elf-init
 csu-dummies = $(filter-out $(start-installed-name),crt1.o Mcrt1.o)
 extra-objs = start.o \
@@ -48,15 +48,15 @@ tests =
 
 CFLAGS-.o += $(no-stack-protector)
 CFLAGS-.op += $(no-stack-protector)
-CFLAGS-.os += $(no-stack-protector)
+CFLAGS-.o_shared += $(no-stack-protector)
 
 ifeq (yes,$(build-shared))
-extra-objs += S$(start-installed-name) gmon-start.os
+extra-objs += S$(start-installed-name) gmon-start.o_shared
 ifneq ($(start-installed-name),$(static-start-installed-name))
 extra-objs += gmon-start.o
 endif
 install-lib += S$(start-installed-name)
-generated += start.os
+generated += start.o_shared
 else
 extra-objs += gmon-start.o
 endif
@@ -93,7 +93,7 @@ endif
 
 extra-objs += abi-note.o init.o static-reloc.o
 ifeq (yes,$(build-shared))
-extra-objs += static-reloc.os
+extra-objs += static-reloc.o_shared
 endif
 asm-CPPFLAGS += -I$(objpfx).
 
@@ -118,7 +118,7 @@ $(objpfx)$(start-installed-name): $(objpfx)start.o $(objpfx)abi-note.o \
 $(objpfx)r$(start-installed-name): $(objpfx)start.o $(objpfx)abi-note.o \
 				  $(objpfx)init.o
 	$(link-relocatable)
-$(objpfx)S$(start-installed-name): $(objpfx)start.os $(objpfx)abi-note.o \
+$(objpfx)S$(start-installed-name): $(objpfx)start.o_shared $(objpfx)abi-note.o \
 				  $(objpfx)init.o
 	$(link-relocatable)
 endif
@@ -128,7 +128,7 @@ endif
 # to turn on profiling code at startup.
 ifeq (yes,$(build-shared))
 $(objpfx)g$(start-installed-name): \
-  $(objpfx)g%: $(objpfx)S% $(objpfx)gmon-start.os $(objpfx)static-reloc.os
+  $(objpfx)g%: $(objpfx)S% $(objpfx)gmon-start.o_shared $(objpfx)static-reloc.o_shared
 	$(link-relocatable)
 $(objpfx)gr$(start-installed-name): \
   $(objpfx)gr%: $(objpfx)r% $(objpfx)gmon-start.o

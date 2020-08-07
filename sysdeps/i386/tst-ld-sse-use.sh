@@ -28,21 +28,21 @@ tmp=$(mktemp ${objpfx}tst-ld-sse-use.XXXXXX)
 trap 'rm -f "$tmp"' 1 2 3 15
 
 # List of object files we have to test
-rtldobjs=$($READELF -W -wi ${objpfx}dl-allobjs.os |
+rtldobjs=$($READELF -W -wi ${objpfx}dl-allobjs.o_shared |
     awk '/^ </ { if ($5 == "(DW_TAG_compile_unit)") c=1; else c=0 } $2 == "DW_AT_name" { if (c == 1) print $NF }' |
     sed 's,\(.*/\|\)\([_[:alnum:]-]*[.]\).$,\2os,')
 rtldobjs="$rtldobjs $(ar t ${objpfx}rtld-libc.a)"
 
 # OBJECT symbols can be ignored.
-$READELF -sW ${objpfx}dl-allobjs.os ${objpfx}rtld-libc.a |
+$READELF -sW ${objpfx}dl-allobjs.o_shared ${objpfx}rtld-libc.a |
 egrep " OBJECT  *GLOBAL " |
 awk '{if ($7 != "ABS") print $8 }' |
 sort -u > "$tmp"
 declare -a objects
 objects=($(cat "$tmp"))
 
-objs="dl-runtime.os"
-tocheck="dl-runtime.os"
+objs="dl-runtime.o_shared"
+tocheck="dl-runtime.o_shared"
 
 while test -n "$objs"; do
   this="$objs"

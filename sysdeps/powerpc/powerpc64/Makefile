@@ -27,13 +27,13 @@ no-special-regs := $(sort $(foreach n,40 41 50 51 60 61 62 63 \
 
 # Need to prevent gcc from using fprs in code used during dynamic linking.
 
-CFLAGS-dl-runtime.os = $(no-special-regs)
-CFLAGS-dl-lookup.os = $(no-special-regs)
-CFLAGS-dl-misc.os = $(no-special-regs)
-CFLAGS-rtld-mempcpy.os = $(no-special-regs)
-CFLAGS-rtld-memmove.os = $(no-special-regs)
-CFLAGS-rtld-memchr.os = $(no-special-regs)
-CFLAGS-rtld-strnlen.os = $(no-special-regs)
+CFLAGS-dl-runtime.o_shared = $(no-special-regs)
+CFLAGS-dl-lookup.o_shared = $(no-special-regs)
+CFLAGS-dl-misc.o_shared = $(no-special-regs)
+CFLAGS-rtld-mempcpy.o_shared = $(no-special-regs)
+CFLAGS-rtld-memmove.o_shared = $(no-special-regs)
+CFLAGS-rtld-memchr.o_shared = $(no-special-regs)
+CFLAGS-rtld-strnlen.o_shared = $(no-special-regs)
 
 ifeq ($(subdir),elf)
 # help gcc inline asm code from dl-machine.h

@@ -216,26 +216,26 @@ CFLAGS-waitid.c += -fexceptions -fasynchronous-unwind-tables
 CFLAGS-waitpid.c += -fexceptions -fasynchronous-unwind-tables
 CFLAGS-getopt.c += -fexceptions
 CFLAGS-wordexp.c += -fexceptions
-CFLAGS-wordexp.os = -fomit-frame-pointer
+CFLAGS-wordexp.o_shared = -fomit-frame-pointer
 CFLAGS-sysconf.c += -fexceptions -DGETCONF_DIR='"$(libexecdir)/getconf"'
 CFLAGS-pathconf.c += -fexceptions
 CFLAGS-fpathconf.c += -fexceptions
 CFLAGS-spawn.c += -fexceptions
-CFLAGS-spawn.os = -fomit-frame-pointer
+CFLAGS-spawn.o_shared = -fomit-frame-pointer
 CFLAGS-spawnp.c += -fexceptions
-CFLAGS-spawnp.os = -fomit-frame-pointer
+CFLAGS-spawnp.o_shared = -fomit-frame-pointer
 CFLAGS-spawni.c += -fexceptions
-CFLAGS-spawni.os = -fomit-frame-pointer
+CFLAGS-spawni.o_shared = -fomit-frame-pointer
 CFLAGS-glob.c += $(uses-callbacks) -fexceptions
 CFLAGS-glob64.c += $(uses-callbacks) -fexceptions
 CFLAGS-getconf.c += -DGETCONF_DIR='"$(libexecdir)/getconf"'
-CFLAGS-execve.os = -fomit-frame-pointer
-CFLAGS-fexecve.os = -fomit-frame-pointer
-CFLAGS-execv.os = -fomit-frame-pointer
-CFLAGS-execle.os = -fomit-frame-pointer
-CFLAGS-execl.os = -fomit-frame-pointer
-CFLAGS-execvp.os = -fomit-frame-pointer
-CFLAGS-execlp.os = -fomit-frame-pointer
+CFLAGS-execve.o_shared = -fomit-frame-pointer
+CFLAGS-fexecve.o_shared = -fomit-frame-pointer
+CFLAGS-execv.o_shared = -fomit-frame-pointer
+CFLAGS-execle.o_shared = -fomit-frame-pointer
+CFLAGS-execl.o_shared = -fomit-frame-pointer
+CFLAGS-execvp.o_shared = -fomit-frame-pointer
+CFLAGS-execlp.o_shared = -fomit-frame-pointer
 CFLAGS-nanosleep.c += -fexceptions -fasynchronous-unwind-tables
 
 tstgetopt-ARGS = -a -b -cfoobar --required foobar --optional=bazbug \

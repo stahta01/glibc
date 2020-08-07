@@ -46,7 +46,7 @@ libthread_db-routines = td_init td_log td_ta_new td_ta_delete \
 			td_thr_tlsbase td_thr_tls_get_addr \
 			fetch-value
 
-libthread_db-inhibit-o = $(filter-out .os,$(object-suffixes))
+libthread_db-inhibit-o = $(filter-out .o_shared,$(object-suffixes))
 
 # The ps_* callback functions are not defined.
 libthread_db.so-no-z-defs = yes

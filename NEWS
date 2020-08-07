@@ -1463,7 +1463,7 @@ The following bugs are resolved with this release:
   [20525] libc: <sys/quota.h> should be based on kernel headers
   [20539] math: GCC 7 -static -lm fails to link at -O3
   [20554] libc: ld: bss-plt forced due to /usr/lib/libc_nonshared.a(ppc-
-    mcount.oS)
+    mcount.o_static)
   [20558] string: POSIX bcopy/bzero decls do not implement Object Size
     Checking
   [20591] network: Remove obsolete DNSSEC support
@@ -2123,7 +2123,7 @@ The following bugs are resolved with this release:
     threshold
   [19094] math: lrint, llrint missing exceptions close to overflow threshold
   [19095] math: dbl-64 lrint incorrect for 64-bit long
-  [19122] dynamic-link: Unnecessary PLT relocations in librtld.os
+  [19122] dynamic-link: Unnecessary PLT relocations in librtld.o_shared
   [19124] dynamic-link: ld.so failed to build with older assmebler
   [19125] math: [powerpc32] llroundf, llround incorrect exceptions
   [19129] dynamic-link: [arm] Concurrent lazy TLSDESC resolution can crash

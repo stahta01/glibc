@@ -22,7 +22,7 @@ objpfx="$2"
 # To avoid long paths.
 cd "$objpfx"
 
-# OK if *.os is missing.
+# OK if *.o_shared is missing.
 shopt -s nullglob
 
 # Search all dependency files for file names in the include directory.

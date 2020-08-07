@@ -91,7 +91,7 @@ test-extras = \
   tst-interpose-aux-thread \
 
 libmemusage-routines = memusage
-libmemusage-inhibit-o = $(filter-out .os,$(object-suffixes))
+libmemusage-inhibit-o = $(filter-out .o_shared,$(object-suffixes))
 
 $(objpfx)tst-malloc-backtrace: $(shared-thread-library)
 $(objpfx)tst-malloc-thread-exit: $(shared-thread-library)

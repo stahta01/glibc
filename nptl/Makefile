@@ -389,7 +389,7 @@ modules-names = tst-atfork2mod tst-tls3mod tst-tls4moda tst-tls4modb \
 		tst-_res1mod1 tst-_res1mod2 tst-execstack-mod tst-fini1mod \
 		tst-join7mod tst-compat-forwarder-mod tst-audit-threads-mod1 \
 		tst-audit-threads-mod2
-extra-test-objs += $(addsuffix .os,$(strip $(modules-names))) \
+extra-test-objs += $(addsuffix .o_shared,$(strip $(modules-names))) \
 		   tst-cleanup4aux.o tst-cleanupx4aux.o
 test-extras += tst-cleanup4aux tst-cleanupx4aux
 test-modules = $(addprefix $(objpfx),$(addsuffix .so,$(modules-names)))
@@ -487,7 +487,7 @@ install: $(inst_libdir)/libpthread.so
 
 $(inst_libdir)/libpthread.so: $(common-objpfx)format.lds \
 			      $(objpfx)libpthread.so$(libpthread.so-version) \
-			      $(inst_libdir)/$(patsubst %,$(libtype.oS),\
+			      $(inst_libdir)/$(patsubst %,$(libtype.o_static),\
 							$(libprefix)pthread) \
 			      $(+force)
 	(echo '/* GNU ld script';\
@@ -495,7 +495,7 @@ $(inst_libdir)/libpthread.so: $(common-objpfx)format.lds \
 	 echo '   the static library, so try that secondarily.  */';\
 	 cat $<; \
 	 echo 'GROUP ( $(slibdir)/libpthread.so$(libpthread.so-version)' \
-	      '$(libdir)/$(patsubst %,$(libtype.oS),$(libprefix)pthread)'\
+	      '$(libdir)/$(patsubst %,$(libtype.o_static),$(libprefix)pthread)'\
 	      ')' \
 	) > $@.new
 	mv -f $@.new $@
@@ -506,7 +506,7 @@ endif
 # stack frame is more work than the actual operation.  Disable the
 # frame creation entirely.  This will help applications which call the
 # function frequently to get a thread-specific handle.
-CFLAGS-pthread_self.os += -fomit-frame-pointer
+CFLAGS-pthread_self.o_shared += -fomit-frame-pointer
 
 # Run the cancellation and cleanup tests also for the modern, exception-based
 # implementation.  For this we have to pass the -fexceptions parameter.
@@ -694,7 +694,7 @@ generated += $(objpfx)tst-atfork2.mtrace \
 # Give libpthread.so an entry point and make it directly runnable itself.
 LDFLAGS-pthread.so += -e __nptl_main
 # pt-interp.c exists just to get the runtime linker path into libpthread.so.
-$(objpfx)pt-interp.os: $(common-objpfx)runtime-linker.h
+$(objpfx)pt-interp.o_shared: $(common-objpfx)runtime-linker.h
 endif
 
 ifeq ($(run-built-tests),yes)

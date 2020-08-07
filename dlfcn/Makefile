@@ -24,7 +24,7 @@ extra-libs	:= libdl
 libdl-routines	:= dlopen dlclose dlsym dlvsym dlerror dladdr dladdr1 dlinfo \
 		   dlmopen dlfcn
 routines	:= $(patsubst %,s%,$(filter-out dlfcn,$(libdl-routines)))
-elide-routines.os := $(routines)
+elide-routines.o_shared := $(routines)
 
 extra-libs-others := libdl
 
@@ -65,7 +65,7 @@ tests-unsupported += bug-atexit3
 endif
 endif
 
-extra-test-objs += $(modules-names:=.os)
+extra-test-objs += $(modules-names:=.o_shared)
 generated += $(modules-names:=.so)
 
 include ../Rules

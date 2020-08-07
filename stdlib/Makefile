@@ -114,7 +114,7 @@ tests-unsupported += tst-quick_exit tst-thread-quick_exit
 endif
 
 modules-names	= tst-tls-atexit-lib test-dlclose-exit-race-helper
-extra-test-objs += $(addsuffix .os, $(modules-names))
+extra-test-objs += $(addsuffix .o_shared, $(modules-names))
 
 ifeq ($(build-shared),yes)
 tests		+= tst-putenv
@@ -131,7 +131,7 @@ routines := $(strip $(routines) $(mpn-routines))	\
 aux += fpioconst mp_clz_tab
 
 tests-extras += tst-putenvmod
-extra-test-objs += tst-putenvmod.os
+extra-test-objs += tst-putenvmod.o_shared
 
 generated += isomac isomac.out tst-putenvmod.so
 
@@ -139,7 +139,7 @@ CFLAGS-bsearch.c += $(uses-callbacks)
 CFLAGS-msort.c += $(uses-callbacks)
 CFLAGS-qsort.c += $(uses-callbacks)
 CFLAGS-system.c += -fexceptions
-CFLAGS-system.os = -fomit-frame-pointer
+CFLAGS-system.o_shared = -fomit-frame-pointer
 CFLAGS-fmtmsg.c += -fexceptions
 
 CFLAGS-strfmon.c += $(libio-mtsafe)
@@ -208,7 +208,7 @@ $(objpfx)tst-fmtmsg.out: tst-fmtmsg.sh $(objpfx)tst-fmtmsg
 $(objpfx)tst-putenv: $(objpfx)tst-putenvmod.so
 LDFLAGS-tst-putenv = $(no-as-needed)
 
-$(objpfx)tst-putenvmod.so: $(objpfx)tst-putenvmod.os $(link-libc-deps)
+$(objpfx)tst-putenvmod.so: $(objpfx)tst-putenvmod.o_shared $(link-libc-deps)
 	$(build-module)
 libof-tst-putenvmod = extramodules
 

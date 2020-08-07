@@ -548,9 +548,9 @@ static-only-routines =
 endif
 endif
 
-elide-routines.oS += $(filter-out $(static-only-routines),\
+elide-routines.o_static += $(filter-out $(static-only-routines),\
 				  $(routines) $(aux) $(sysdep_routines))
-elide-routines.os += $(static-only-routines)
+elide-routines.o_shared += $(static-only-routines)
 
 # If we have versioned code we don't need the old versions in any of the
 # static libraries.
@@ -686,17 +686,17 @@ $(build-module-helper) -o $@ $(shlib-lds-flags) \
 $(call after-link,$@)
 endef
 
-# sofini.os must be placed last since it terminates .eh_frame section.
+# sofini.o_shared must be placed last since it terminates .eh_frame section.
 build-module-helper-objlist = \
 	$(patsubst %_pic.a,$(whole-archive) %_pic.a $(no-whole-archive),\
 		   $(filter-out %.lds $(map-file) $(+preinit) $(+postinit) \
-				$(elf-objpfx)sofini.os \
+				$(elf-objpfx)sofini.o_shared \
 				$(link-libc-deps),$^))
 
 build-module-objlist = $(build-module-helper-objlist) $(LDLIBS-$(@F:%.so=%).so)
 build-shlib-objlist = $(build-module-helper-objlist) \
 		      $(LDLIBS-$(@F:lib%.so=%).so) \
-		      $(filter $(elf-objpfx)sofini.os,$^)
+		      $(filter $(elf-objpfx)sofini.o_shared,$^)
 
 # Don't try to use -lc when making libc.so itself.
 # Also omits crti.o and crtn.o, which we do not want
@@ -711,22 +711,22 @@ LDFLAGS-c.so += -e __libc_main
 # contains some of libc_pic.a already, which will prevent the COMMONs
 # from being allocated in libc.so, which introduces evil dependencies
 # between libc.so and ld.so, which can make it impossible to upgrade.
-$(common-objpfx)libc_pic.os: $(common-objpfx)libc_pic.a
+$(common-objpfx)libc_pic.o_shared: $(common-objpfx)libc_pic.a
 	$(LINK.o) -nostdlib -nostartfiles -r -o $@ \
-	$(LDFLAGS-c_pic.os) -Wl,-d $(whole-archive) $^ -o $@
+	$(LDFLAGS-c_pic.o_shared) -Wl,-d $(whole-archive) $^ -o $@
 
 ifeq (,$(strip $(shlib-lds-flags)))
 # Generate a list of -R options to excise .gnu.glibc-stub.* sections.
-$(common-objpfx)libc_pic.opts: $(common-objpfx)libc_pic.os
+$(common-objpfx)libc_pic.opts: $(common-objpfx)libc_pic.o_shared
 	$(OBJDUMP) -h $< | \
 	$(AWK) '$$2 ~ /\.gnu\.glibc-stub\./ { print "-R", $$2 }' \
 		> $@T
 	mv -f $@T $@
 # Apply those -R options.
-$(common-objpfx)libc_pic.os.clean: $(common-objpfx)libc_pic.opts \
-				   $(common-objpfx)libc_pic.os
+$(common-objpfx)libc_pic.o_shared.clean: $(common-objpfx)libc_pic.opts \
+				   $(common-objpfx)libc_pic.o_shared
 	$(OBJCOPY) @$^ $@
-generated += libc_pic.opts libc_pic.os.clean
+generated += libc_pic.opts libc_pic.o_shared.clean
 
 libc_pic_clean := .clean
 endif
@@ -745,8 +745,8 @@ $(common-objpfx)linkobj/libc_pic.a: $(common-objpfx)libc_pic.a \
 	 $(AR) x ../libc_pic.a; \
 	 rm $$($(AR) t ../sunrpc/librpc_compat_pic.a | sed 's/^compat-//'); \
 	 $(AR) x ../sunrpc/librpc_compat_pic.a; \
-	 $(AR) cr libc_pic.a *.os; \
-	 rm *.os)
+	 $(AR) cr libc_pic.a *.o_shared; \
+	 rm *.o_shared)
 endif # $(subdirs) contains sunrpc
 
 # Clear link-libc-deps for the libc.so libraries so build-shlibs does not
@@ -756,19 +756,19 @@ $(common-objpfx)linkobj/libc.so: link-libc-deps = # empty
 
 # Use our own special initializer and finalizer files for the libc.so
 # libraries.
-$(common-objpfx)libc.so: $(elf-objpfx)soinit.os \
-			 $(common-objpfx)libc_pic.os$(libc_pic_clean) \
-			 $(elf-objpfx)sofini.os \
-			 $(elf-objpfx)interp.os \
+$(common-objpfx)libc.so: $(elf-objpfx)soinit.o_shared \
+			 $(common-objpfx)libc_pic.o_shared$(libc_pic_clean) \
+			 $(elf-objpfx)sofini.o_shared \
+			 $(elf-objpfx)interp.o_shared \
 			 $(elf-objpfx)ld.so \
 			 $(shlib-lds)
 	$(build-shlib)
 	$(call after-link,$@)
 
-$(common-objpfx)linkobj/libc.so: $(elf-objpfx)soinit.os \
+$(common-objpfx)linkobj/libc.so: $(elf-objpfx)soinit.o_shared \
 			 $(common-objpfx)linkobj/libc_pic.a \
-			 $(elf-objpfx)sofini.os \
-			 $(elf-objpfx)interp.os \
+			 $(elf-objpfx)sofini.o_shared \
+			 $(elf-objpfx)interp.o_shared \
 			 $(elf-objpfx)ld.so \
 			 $(shlib-lds)
 	$(build-shlib)
@@ -777,7 +777,7 @@ $(common-objpfx)linkobj/libc.so: $(elf-objpfx)soinit.os \
 ifeq ($(build-shared),yes)
 $(common-objpfx)libc.so: $(common-objpfx)libc.map
 endif
-common-generated += libc.so libc_pic.os
+common-generated += libc.so libc_pic.o_shared
 ifdef libc.so-version
 $(common-objpfx)libc.so$(libc.so-version): $(common-objpfx)libc.so
 	$(make-link)
@@ -831,14 +831,14 @@ endif
 
 extra-modules-build := $(filter-out $(modules-names-nobuild),$(modules-names))
 $(extra-modules-build:%=$(objpfx)%.so): $(objpfx)%.so: \
-		$(objpfx)%.os $(shlib-lds) $(link-libs-deps)
+		$(objpfx)%.o_shared $(shlib-lds) $(link-libs-deps)
 	$(build-module)
 endif
 
 +depfiles := $(sources:.c=.d) \
-	     $(patsubst %.o,%.d,$(filter %.o,$(extra-objs:.os=.o))) \
-	     $(patsubst %.oS,%.d,$(filter %.oS,$(extra-objs))) \
-	     $(patsubst %.o,%.d,$(filter %.o,$(extra-test-objs:.os=.o))) \
+	     $(patsubst %.o,%.d,$(filter %.o,$(extra-objs:.o_shared=.o))) \
+	     $(patsubst %.o_static,%.d,$(filter %.o_static,$(extra-objs))) \
+	     $(patsubst %.o,%.d,$(filter %.o,$(extra-test-objs:.o_shared=.o))) \
 	     $(addsuffix .d,$(tests) $(tests-internal) $(xtests) $(test-srcs))
 ifeq ($(build-programs),yes)
 +depfiles += $(addsuffix .d,$(others) $(sysdep-others))
@@ -1006,7 +1006,7 @@ endef
 
 # Any directory (parent or subdir) should install libc.a; this way
 # "make install" in a subdir is guaranteed to install everything it changes.
-installed-libcs := $(foreach o,$(filter-out .os,$(object-suffixes-for-libc)),\
+installed-libcs := $(foreach o,$(filter-out .o_shared,$(object-suffixes-for-libc)),\
 			     $(inst_libdir)/$(patsubst %,$(libtype$o),\
 						     $(libprefix)$(libc-name)))
 
@@ -1159,7 +1159,7 @@ ifndef subdir
 install: $(inst_libdir)/libc.so
 $(inst_libdir)/libc.so: $(common-objpfx)format.lds \
 			$(common-objpfx)libc.so$(libc.so-version) \
-			$(inst_libdir)/$(patsubst %,$(libtype.oS),\
+			$(inst_libdir)/$(patsubst %,$(libtype.o_static),\
 						  $(libprefix)$(libc-name)) \
 			$(+force)
 	(echo '/* GNU ld script';\
@@ -1167,7 +1167,7 @@ $(inst_libdir)/libc.so: $(common-objpfx)format.lds \
 	 echo '   the static library, so try that secondarily.  */';\
 	 cat $<; \
 	 echo 'GROUP ( $(slibdir)/libc.so$(libc.so-version)' \
-	      '$(libdir)/$(patsubst %,$(libtype.oS),$(libprefix)$(libc-name))'\
+	      '$(libdir)/$(patsubst %,$(libtype.o_static),$(libprefix)$(libc-name))'\
 	      ' AS_NEEDED (' $(rtlddir)/$(rtld-installed-name) ') )' \
 	) > $@.new
 	mv -f $@.new $@
@@ -1611,7 +1611,7 @@ common-mostlyclean:
 				     $(install-lib) $(install-lib.so) \
 				     $(install-lib.so:%.so=%_pic.a))
 	-rm -f core
-	-rm -f $(objpfx)rtld-*.os
+	-rm -f $(objpfx)rtld-*.o_shared
 	$(rmobjs)
 define rmobjs
 $(foreach o,$(object-suffixes-for-libc),

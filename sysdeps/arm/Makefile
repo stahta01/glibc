@@ -12,7 +12,7 @@ sysdep_routines += aeabi_unwind_cpp_pr1 find_exidx
 sysdep-rtld-routines += aeabi_unwind_cpp_pr1
 shared-only-routines += aeabi_unwind_cpp_pr1
 
-$(objpfx)libgcc-stubs.a: $(objpfx)aeabi_unwind_cpp_pr1.os
+$(objpfx)libgcc-stubs.a: $(objpfx)aeabi_unwind_cpp_pr1.o_shared
 	$(build-extra-lib)
 
 lib-noranlib: $(objpfx)libgcc-stubs.a

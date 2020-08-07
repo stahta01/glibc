@@ -80,15 +80,15 @@ $(objpfx)test-double-libmvec-alias-avx2-mod.so: \
   $(objpfx)../mathvec/libmvec_nonshared.a $(libmvec)
 
 $(objpfx)test-double-libmvec-alias-main: \
-  $(objpfx)test-double-libmvec-alias-mod.os \
+  $(objpfx)test-double-libmvec-alias-mod.o_shared \
   $(objpfx)../mathvec/libmvec_nonshared.a $(libmvec)
 
 $(objpfx)test-double-libmvec-alias-avx-main: \
-  $(objpfx)test-double-libmvec-alias-avx-mod.os \
+  $(objpfx)test-double-libmvec-alias-avx-mod.o_shared \
   $(objpfx)../mathvec/libmvec_nonshared.a $(libmvec)
 
 $(objpfx)test-double-libmvec-alias-avx2-main: \
-  $(objpfx)test-double-libmvec-alias-avx2-mod.os \
+  $(objpfx)test-double-libmvec-alias-avx2-mod.o_shared \
   $(objpfx)../mathvec/libmvec_nonshared.a $(libmvec)
 
 $(objpfx)test-float-libmvec-alias: \
@@ -107,15 +107,15 @@ $(objpfx)test-float-libmvec-alias-avx2-mod.so: \
   $(objpfx)../mathvec/libmvec_nonshared.a $(libmvec)
 
 $(objpfx)test-float-libmvec-alias-main: \
-  $(objpfx)test-float-libmvec-alias-mod.os \
+  $(objpfx)test-float-libmvec-alias-mod.o_shared \
   $(objpfx)../mathvec/libmvec_nonshared.a $(libmvec)
 
 $(objpfx)test-float-libmvec-alias-avx-main: \
-  $(objpfx)test-float-libmvec-alias-avx-mod.os \
+  $(objpfx)test-float-libmvec-alias-avx-mod.o_shared \
   $(objpfx)../mathvec/libmvec_nonshared.a $(libmvec)
 
 $(objpfx)test-float-libmvec-alias-avx2-main: \
-  $(objpfx)test-float-libmvec-alias-avx2-mod.os \
+  $(objpfx)test-float-libmvec-alias-avx2-mod.o_shared \
   $(objpfx)../mathvec/libmvec_nonshared.a $(libmvec)
 
 $(objpfx)test-double-libmvec-sincos: \
@@ -165,7 +165,7 @@ $(objpfx)test-double-libmvec-alias-avx512-mod.so: \
   $(objpfx)../mathvec/libmvec_nonshared.a $(libmvec)
 
 $(objpfx)test-double-libmvec-alias-avx512-main: \
-  $(objpfx)test-double-libmvec-alias-avx512-mod.os \
+  $(objpfx)test-double-libmvec-alias-avx512-mod.o_shared \
   $(objpfx)../mathvec/libmvec_nonshared.a $(libmvec)
 
 $(objpfx)test-float-libmvec-alias-avx512: \
@@ -174,7 +174,7 @@ $(objpfx)test-float-libmvec-alias-avx512-mod.so: \
   $(objpfx)../mathvec/libmvec_nonshared.a $(libmvec)
 
 $(objpfx)test-float-libmvec-alias-avx512-main: \
-  $(objpfx)test-float-libmvec-alias-avx512-mod.os \
+  $(objpfx)test-float-libmvec-alias-avx512-mod.o_shared \
   $(objpfx)../mathvec/libmvec_nonshared.a $(libmvec)
 
 $(objpfx)test-double-libmvec-sincos-avx512: \

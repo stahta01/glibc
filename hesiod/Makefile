@@ -31,7 +31,7 @@ vpath %.c nss_hesiod
 libnss_hesiod-routines	:= hesiod hesiod-grp hesiod-proto \
 			   hesiod-pwd hesiod-service
 # Build only shared library
-libnss_hesiod-inhibit-o	= $(filter-out .os,$(object-suffixes))
+libnss_hesiod-inhibit-o	= $(filter-out .o_shared,$(object-suffixes))
 
 include ../Rules
 

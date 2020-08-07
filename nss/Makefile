@@ -102,15 +102,15 @@ libnss_compat-routines	:= $(addprefix compat-,grp pwd spwd initgroups) \
 install-others		+= $(inst_vardbdir)/Makefile
 
 # Build static module into libc if requested
-libnss_files-inhibit-o	= $(filter-out .os,$(object-suffixes))
-libnss_db-inhibit-o	= $(filter-out .os,$(object-suffixes))
-libnss_compat-inhibit-o	= $(filter-out .os,$(object-suffixes))
+libnss_files-inhibit-o	= $(filter-out .o_shared,$(object-suffixes))
+libnss_db-inhibit-o	= $(filter-out .o_shared,$(object-suffixes))
+libnss_compat-inhibit-o	= $(filter-out .o_shared,$(object-suffixes))
 ifeq ($(build-static-nss),yes)
 routines                += $(libnss_files-routines)
 static-only-routines    += $(libnss_files-routines)
 tests-static		+= tst-nss-static
 endif
-extra-test-objs		+= nss_test1.os nss_test2.os
+extra-test-objs		+= nss_test1.o_shared nss_test2.o_shared
 
 include ../Rules
 
@@ -146,11 +146,11 @@ rtld-tests-LDFLAGS += -Wl,--dynamic-list=nss_test.ver
 
 libof-nss_test1 = extramodules
 libof-nss_test2 = extramodules
-$(objpfx)/libnss_test1.so: $(objpfx)nss_test1.os $(link-libc-deps)
+$(objpfx)/libnss_test1.so: $(objpfx)nss_test1.o_shared $(link-libc-deps)
 	$(build-module)
-$(objpfx)/libnss_test2.so: $(objpfx)nss_test2.os $(link-libc-deps)
+$(objpfx)/libnss_test2.so: $(objpfx)nss_test2.o_shared $(link-libc-deps)
 	$(build-module)
-$(objpfx)nss_test2.os : nss_test1.c
+$(objpfx)nss_test2.o_shared : nss_test1.c
 ifdef libnss_test1.so-version
 $(objpfx)/libnss_test1.so$(libnss_test1.so-version): $(objpfx)/libnss_test1.so
 	$(make-link)

@@ -51,7 +51,7 @@ BEGIN {
         target_pattern = td[1];
         dep_pattern = td[2];
         # rtld objects are always PIC.
-        if (target_pattern ~ /^rtld/ && o != ".os") {
+        if (target_pattern ~ /^rtld/ && o != ".o_shared") {
             continue;
         }
         if (target_pattern == "%") {

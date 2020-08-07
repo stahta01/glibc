@@ -22,7 +22,7 @@ CPPFLAGS-pt-crti.S += $(pic-ccflag)
 CPPFLAGS-crtn.S += $(pic-ccflag)
 endif
 
-ASFLAGS-.os += $(pic-ccflag)
+ASFLAGS-.o_shared += $(pic-ccflag)
 # libc.a and libc_p.a must be compiled with -fPIE/-fpie for static PIE.
 ASFLAGS-.o += $(pie-default)
 ASFLAGS-.op += $(pie-default)

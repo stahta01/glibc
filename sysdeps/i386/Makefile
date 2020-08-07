@@ -94,7 +94,7 @@ endif
 # With SSE disabled, ensure -fpmath is not set to use sse either.
 rtld-CFLAGS += -mno-sse -mno-mmx -mfpmath=387
 ifeq ($(subdir),elf)
-CFLAGS-.os += $(if $(filter $(@F),$(patsubst %,%.os,$(all-rtld-routines))),\
+CFLAGS-.o_shared += $(if $(filter $(@F),$(patsubst %,%.o_shared,$(all-rtld-routines))),\
 		   $(rtld-CFLAGS))
 
 tests-special += $(objpfx)tst-ld-sse-use.out
@@ -103,5 +103,5 @@ $(objpfx)tst-ld-sse-use.out: ../sysdeps/i386/tst-ld-sse-use.sh $(objpfx)ld.so
 	$(BASH) $< $(objpfx) '$(NM)' '$(OBJDUMP)' '$(READELF)' > $@; \
 	$(evaluate-test)
 else
-CFLAGS-.os += $(if $(filter rtld-%.os,$(@F)), $(rtld-CFLAGS))
+CFLAGS-.o_shared += $(if $(filter rtld-%.o_shared,$(@F)), $(rtld-CFLAGS))
 endif

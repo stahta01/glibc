@@ -116,24 +116,24 @@ headers += $(rpcsvc:%.x=rpcsvc/%.h)
 extra-libs := librpcsvc
 extra-libs-others := librpcsvc # Make it in `others' pass, not `lib' pass.
 librpcsvc-routines = $(rpcsvc:%.x=x%)
-librpcsvc-inhibit-o = .os # Build no shared rpcsvc library.
+librpcsvc-inhibit-o = .o_shared # Build no shared rpcsvc library.
 omit-deps = $(librpcsvc-routines)
 endif
 
 ifeq (yes,$(build-shared))
 rpc-compat-routines = $(addprefix compat-,$(need-export-routines))
-rpc-compat-routines.os = $(addprefix $(objpfx), \
-				     $(addsuffix .os,$(rpc-compat-routines)))
-extra-objs += $(addsuffix .os,$(rpc-compat-routines))
+rpc-compat-routines.o_shared = $(addprefix $(objpfx), \
+				     $(addsuffix .o_shared,$(rpc-compat-routines)))
+extra-objs += $(addsuffix .o_shared,$(rpc-compat-routines))
 endif
 
 include ../Rules
 
 ifeq (yes,$(build-shared))
 subdir_lib: $(objpfx)librpc_compat_pic.a
-$(objpfx)librpc_compat_pic.a: $(rpc-compat-routines.os)
+$(objpfx)librpc_compat_pic.a: $(rpc-compat-routines.o_shared)
 	$(AR) cr$(verbose) $@ $^
-$(rpc-compat-routines.os): $(objpfx)compat-%.os: %.c $(before-compile)
+$(rpc-compat-routines.o_shared): $(objpfx)compat-%.o_shared: %.c $(before-compile)
 	$(compile-command.c) -DEXPORT_RPC_SYMBOLS
 endif
 

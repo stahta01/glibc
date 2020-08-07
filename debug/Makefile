@@ -164,10 +164,10 @@ extra-libs = libSegFault libpcprofile
 extra-libs-others = $(extra-libs)
 
 libSegFault-routines = segfault
-libSegFault-inhibit-o = $(filter-out .os,$(object-suffixes))
+libSegFault-inhibit-o = $(filter-out .o_shared,$(object-suffixes))
 
 libpcprofile-routines = pcprofile
-libpcprofile-inhibit-o = $(filter-out .os,$(object-suffixes))
+libpcprofile-inhibit-o = $(filter-out .o_shared,$(object-suffixes))
 
 others = pcprofiledump
 install-bin = pcprofiledump

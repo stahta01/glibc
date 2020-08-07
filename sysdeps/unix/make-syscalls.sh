@@ -223,7 +223,7 @@ while read file srcfile caller syscall args strong weak; do
 
   if test $shared_only = t; then
     # The versioned symbols are only in the shared library.
-    echo "ifneq (,\$(filter .os,\$(object-suffixes)))"
+    echo "ifneq (,\$(filter .o_shared,\$(object-suffixes)))"
   fi
   # Accumulate the list of syscall files for this directory.
   echo "unix-syscalls += $file"
@@ -233,7 +233,7 @@ while read file srcfile caller syscall args strong weak; do
   if test $shared_only = t; then
     # The versioned symbols are only in the shared library.
     echo "shared-only-routines += $file"
-    test -n "$vdso_syscall" || echo "\$(objpfx)${file}.os: \\"
+    test -n "$vdso_syscall" || echo "\$(objpfx)${file}.o_shared: \\"
   else
     object_suffixes='$(object-suffixes)'
     test -z "$vdso_syscall" || object_suffixes='$(object-suffixes-noshared)'
@@ -277,7 +277,7 @@ while read file srcfile caller syscall args strong weak; do
     vdso_symver=`echo "$vdso_symver" | sed 's/\./_/g'`
     cat <<EOF
 
-\$(foreach p,\$(sysd-rules-targets),\$(objpfx)\$(patsubst %,\$p,$file).os): \\
+\$(foreach p,\$(sysd-rules-targets),\$(objpfx)\$(patsubst %,\$p,$file).o_shared): \\
 		\$(..)sysdeps/unix/make-syscalls.sh
 	\$(make-target-directory)
 	(echo '#define ${strong} __redirect_${strong}'; \\

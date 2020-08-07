@@ -17,4 +17,4 @@ CPPFLAGS-crtn.S += -fPIC
 endif
 
 # The assembler on SPARC needs the -fPIC flag even when it's assembler code.
-ASFLAGS-.os += -fPIC
+ASFLAGS-.o_shared += -fPIC

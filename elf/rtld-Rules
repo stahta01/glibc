@@ -21,7 +21,7 @@
 # rule in Makefile, which does make -f librtld.mk -f rtld-Rules.
 # librtld.mk is the generated file containing variable definitions for
 # `rtld-subdirs', a subset of the top-level $(subdirs) list; and for each
-# SUBDIR in $(rtld-subdirs), `rtld-SUBDIR' listing `module.os' file names.
+# SUBDIR in $(rtld-subdirs), `rtld-SUBDIR' listing `module.o_shared' file names.
 
 .PHONY: rtld-all
 rtld-all:
@@ -95,31 +95,31 @@ rtld-compile-command.c = $(compile-command.c) $(rtld-CPPFLAGS) $(rtld-CFLAGS)
 # These are the basic compilation rules corresponding to the Makerules ones.
 # The sysd-rules generated makefile already defines pattern rules for rtld-%
 # targets built from sysdeps source files.
-$(objpfx)rtld-%.os: rtld-%.S $(before-compile)
+$(objpfx)rtld-%.o_shared: rtld-%.S $(before-compile)
 	$(rtld-compile-command.S)
-$(objpfx)rtld-%.os: rtld-%.s $(before-compile)
+$(objpfx)rtld-%.o_shared: rtld-%.s $(before-compile)
 	$(rtld-compile-command.s)
-$(objpfx)rtld-%.os: rtld-%.c $(before-compile)
+$(objpfx)rtld-%.o_shared: rtld-%.c $(before-compile)
 	$(rtld-compile-command.c)
-$(objpfx)rtld-%.os: %.S $(before-compile)
+$(objpfx)rtld-%.o_shared: %.S $(before-compile)
 	$(rtld-compile-command.S)
-$(objpfx)rtld-%.os: %.s $(before-compile)
+$(objpfx)rtld-%.o_shared: %.s $(before-compile)
 	$(rtld-compile-command.s)
-$(objpfx)rtld-%.os: %.c $(before-compile)
+$(objpfx)rtld-%.o_shared: %.c $(before-compile)
 	$(rtld-compile-command.c)
 
 # The rules for generated source files.
-$(objpfx)rtld-%.os: $(objpfx)rtld-%.S $(before-compile)
+$(objpfx)rtld-%.o_shared: $(objpfx)rtld-%.S $(before-compile)
 	$(rtld-compile-command.S)
-$(objpfx)rtld-%.os: $(objpfx)rtld-%.s $(before-compile)
+$(objpfx)rtld-%.o_shared: $(objpfx)rtld-%.s $(before-compile)
 	$(rtld-compile-command.s)
-$(objpfx)rtld-%.os: $(objpfx)rtld-%.c $(before-compile)
+$(objpfx)rtld-%.o_shared: $(objpfx)rtld-%.c $(before-compile)
 	$(rtld-compile-command.c)
-$(objpfx)rtld-%.os: $(objpfx)%.S $(before-compile)
+$(objpfx)rtld-%.o_shared: $(objpfx)%.S $(before-compile)
 	$(rtld-compile-command.S)
-$(objpfx)rtld-%.os: $(objpfx)%.s $(before-compile)
+$(objpfx)rtld-%.o_shared: $(objpfx)%.s $(before-compile)
 	$(rtld-compile-command.s)
-$(objpfx)rtld-%.os: $(objpfx)%.c $(before-compile)
+$(objpfx)rtld-%.o_shared: $(objpfx)%.c $(before-compile)
 	$(rtld-compile-command.c)
 
 # The command line setting of rtld-modules (see above) tells us
@@ -128,9 +128,9 @@ rtld-all: $(addprefix $(objpfx),$(rtld-modules))
 
 # Figure out the dependency files we need.  After respecting the $(omit-deps)
 # list as applied to the names without the `rtld-', there may be none left.
-rtld-depfiles := $(patsubst %,$(objpfx)rtld-%.os.d,\
+rtld-depfiles := $(patsubst %,$(objpfx)rtld-%.o_shared.d,\
 			    $(filter-out $(omit-deps),\
-					 $(rtld-modules:rtld-%.os=%)))
+					 $(rtld-modules:rtld-%.o_shared=%)))
 rtld-depfiles := $(strip $(wildcard $(rtld-depfiles)) \
 			 $(patsubst %.dt,%.d,\
 				    $(wildcard $(rtld-depfiles:.d=.dt))))
@@ -140,7 +140,7 @@ endif
 
 # This here is the whole point of all the shenanigans.
 # Set libof-* for each routine.
-cpp-srcs-left := $(rtld-modules:%.os=%)
+cpp-srcs-left := $(rtld-modules:%.o_shared=%)
 lib := rtld
 include $(patsubst %,$(..)libof-iterator.mk,$(cpp-srcs-left))
 

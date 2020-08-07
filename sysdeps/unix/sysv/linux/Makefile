@@ -143,7 +143,7 @@ tests += tst-affinity tst-affinity-pid
 
 CFLAGS-fork.c = $(libio-mtsafe)
 CFLAGS-getpid.o = -fomit-frame-pointer
-CFLAGS-getpid.os = -fomit-frame-pointer
+CFLAGS-getpid.o_shared = -fomit-frame-pointer
 endif
 
 ifeq ($(subdir),inet)

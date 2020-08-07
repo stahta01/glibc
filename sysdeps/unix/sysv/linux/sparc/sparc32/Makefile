@@ -2,7 +2,7 @@
 default-abi := 32
 
 asm-CPPFLAGS = -D__ASSEMBLY__
-ASFLAGS-.os += -fPIC
+ASFLAGS-.o_shared += -fPIC
 LD += -melf32_sparc
 
 ifeq ($(subdir),stdlib)

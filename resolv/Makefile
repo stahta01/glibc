@@ -101,7 +101,7 @@ subdir-dirs = nss_dns
 vpath %.c nss_dns
 
 libnss_dns-routines	:= dns-host dns-network dns-canon
-libnss_dns-inhibit-o	= $(filter-out .os,$(object-suffixes))
+libnss_dns-inhibit-o	= $(filter-out .o_shared,$(object-suffixes))
 ifeq ($(build-static-nss),yes)
 routines                += $(libnss_dns-routines) $(libresolv-routines)
 static-only-routines    += $(libnss_dns-routines) $(libresolv-routines)

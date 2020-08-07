@@ -64,11 +64,11 @@ ifeq ($(build-obsolete-nsl),yes)
 libnsl-routines += nss-default
 libnss_nis-routines	:= $(addprefix nis-,$(databases)) nis-initgroups \
 			   nss-nis
-libnss_nis-inhibit-o	= $(filter-out .os,$(object-suffixes))
+libnss_nis-inhibit-o	= $(filter-out .o_shared,$(object-suffixes))
 
 libnss_nisplus-routines	:= $(addprefix nisplus-,$(databases)) nisplus-parser \
 			   nss-nisplus nisplus-initgroups
-libnss_nisplus-inhibit-o = $(filter-out .os,$(object-suffixes))
+libnss_nisplus-inhibit-o = $(filter-out .o_shared,$(object-suffixes))
 
 else # not $(build-obsolete-nsl)
 # Pretend that libnsl.so is a linker script, so that the symbolic link
@@ -76,7 +76,7 @@ else # not $(build-obsolete-nsl)
 install-lib-ldscripts = libnsl.so
 $(inst_libdir)/libnsl.so:
 # Build only shared libnsl.
-libnsl-inhibit-o = $(filter-out .os,$(object-suffixes))
+libnsl-inhibit-o = $(filter-out .o_shared,$(object-suffixes))
 
 endif # not $(build-obsolete-nsl)
 

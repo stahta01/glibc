@@ -1152,7 +1152,7 @@ class Config(object):
         """Initialize a Config object."""
         self.ctx = ctx
         self.arch = arch
-        self.os = os_name
+        self.o_shared = os_name
         self.variant = variant
         if variant is None:
             self.name = '%s-%s' % (arch, os_name)
@@ -1200,10 +1200,10 @@ class Config(object):
                                '--disable-libdecnumber',
                                '--disable-readline',
                                '--disable-sim'])
-        if self.os.startswith('linux'):
+        if self.o_shared.startswith('linux'):
             self.install_linux_headers(cmdlist)
         self.build_gcc(cmdlist, True)
-        if self.os == 'gnu':
+        if self.o_shared == 'gnu':
             self.install_gnumach_headers(cmdlist)
             self.build_cross_tool(cmdlist, 'mig', 'mig')
             self.install_hurd_headers(cmdlist)
@@ -1383,15 +1383,15 @@ class Glibc(object):
         else:
             self.arch = arch
         if os_name is None:
-            self.os = compiler.os
+            self.o_shared = compiler.o_shared
         else:
-            self.os = os_name
+            self.o_shared = os_name
         self.variant = variant
         if variant is None:
-            self.name = '%s-%s' % (self.arch, self.os)
+            self.name = '%s-%s' % (self.arch, self.o_shared)
         else:
-            self.name = '%s-%s-%s' % (self.arch, self.os, variant)
-        self.triplet = '%s-glibc-%s' % (self.arch, self.os)
+            self.name = '%s-%s-%s' % (self.arch, self.o_shared, variant)
+        self.triplet = '%s-glibc-%s' % (self.arch, self.o_shared)
         if cfg is None:
             self.cfg = []
         else:
@@ -1446,7 +1446,7 @@ class Glibc(object):
         # writing into the working directory.  To avoid possible
         # concurrency issues, copy the source directory.
         cmdlist.create_copy_dir(srcdir, srcdir_copy)
-        use_usr = self.os != 'gnu'
+        use_usr = self.o_shared != 'gnu'
         prefix = '/usr' if use_usr else ''
         cfg_cmd = [os.path.join(srcdir_copy, 'configure'),
                    '--prefix=%s' % prefix,
@@ -1464,7 +1464,7 @@ class Glibc(object):
                    'RANLIB=%s' % self.tool_name('ranlib'),
                    'READELF=%s' % self.tool_name('readelf'),
                    'STRIP=%s' % self.tool_name('strip')]
-        if self.os == 'gnu':
+        if self.o_shared == 'gnu':
             cfg_cmd += ['MIG=%s' % self.tool_name('mig')]
         cfg_cmd += self.cfg
         cmdlist.add_command('configure', cfg_cmd)
