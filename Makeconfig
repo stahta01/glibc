@@ -565,7 +565,7 @@ link-libc-tests-rpath-link = $(link-libc-rpath-link)
 endif  # build-hardcoded-path-in-tests
 
 link-libc-between-gnulib = $(common-objpfx)libc.so$(libc.so-version) \
-			   $(common-objpfx)$(patsubst %,$(libtype.oS),c) \
+			   $(common-objpfx)$(patsubst %,$(libtype.oZ),c) \
 			   -Wl,--as-needed $(elf-objpfx)ld.so \
 			   -Wl,--no-as-needed
 link-libc = $(link-libc-between-gnulib) $(gnulib)
@@ -1005,7 +1005,7 @@ endif
 # to pass different flags for each flavor.
 libtypes = $(foreach o,$(object-suffixes-for-libc),$(libtype$o))
 # .op may be added to all-object-suffixes below.
-all-object-suffixes := .o .os .oS
+all-object-suffixes := .o .os .oZ
 object-suffixes :=
 CPPFLAGS-.o = $(pic-default)
 # libc.a must be compiled with -fPIE/-fpie for static PIE.
@@ -1047,14 +1047,14 @@ object-suffixes-for-libc := $(object-suffixes)
 
 ifeq (yes,$(build-shared))
 # Build special library that contains the static-only routines for libc.
-object-suffixes-for-libc += .oS
+object-suffixes-for-libc += .oZ
 
 # Must build the routines as PIC, though, because they can end up in (users')
 # shared objects.  We don't want to use CFLAGS-os because users may, for
 # example, make that processor-specific.
-CFLAGS-.oS = $(CFLAGS-.o) $(PIC-ccflag) $(extra-nonshared-cflags)
-CPPFLAGS-.oS = $(CPPFLAGS-.o) -DPIC -DLIBC_NONSHARED=1
-libtype.oS = lib%_nonshared.a
+CFLAGS-.oZ = $(CFLAGS-.o) $(PIC-ccflag) $(extra-nonshared-cflags)
+CPPFLAGS-.oZ = $(CPPFLAGS-.o) -DPIC -DLIBC_NONSHARED=1
+libtype.oZ = lib%_nonshared.a
 endif
 
 # The assembler can generate debug information too.
